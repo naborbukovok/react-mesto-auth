@@ -1,4 +1,4 @@
-function PopupWithImage(props) {
+function ImagePopup(props) {
     return (
         <div className={`popup popup_content_image ${(props.card == null) ? '' : 'popup_opened'}`}>
             {(props.card != null) && (
@@ -12,4 +12,4 @@ function PopupWithImage(props) {
     );
 }
 
-export default PopupWithImage;
+export default ImagePopup;

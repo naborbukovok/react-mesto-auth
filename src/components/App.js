@@ -3,7 +3,7 @@ import Header from "./Header.js";
 import Main from "./Main.js";
 import Footer from "./Footer.js";
 import PopupWithForm from "./PopupWithForm.js";
-import PopupWithImage from "./PopupWithImage.js";
+import ImagePopup from "./ImagePopup.js";
 
 function App() {
     const [isEditAvatarPopupOpen, openEditAvatarPopup] = React.useState(false);
@@ -70,7 +70,7 @@ function App() {
                 name="confirmation"
                 onClose={closeAllPopups}
             />
-            <PopupWithImage
+            <ImagePopup
                 card={selectedCard}
                 onClose={closeAllPopups}
             />
