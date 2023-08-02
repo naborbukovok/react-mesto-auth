@@ -1,0 +1,26 @@
+.profile__info {
+    width: 100%;
+    margin-top: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 10px;
+    row-gap: 6px;
+}
+
+@media screen and (min-width: 640px) {
+    .profile__info {
+        width: calc(100% - 300px);
+        margin-top: 0;
+        margin-left: 30px;
+        justify-content: start;
+    }
+}
+
+@media screen and (min-width: 907px) {
+    .profile__info {
+        column-gap: 20px;
+        row-gap: 8px;
+    }
+}

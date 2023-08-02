@@ -1,0 +1,8 @@
+.page {
+    margin: 0 auto;
+    background-color: black;
+    max-width: 880px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+}
