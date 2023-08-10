@@ -52,12 +52,12 @@ function App() {
                 title="Обновить аватар"
                 name="avatar"
                 onClose={closeAllPopups}
+                buttonText="Сохранить"
             >
                 <label className="popup__field">
                     <input name="avatar" placeholder="Ссылка на картинку" type="url" className="popup__input" id="avatar" required />
                     <span className="popup__error avatar-error"></span>
                 </label>
-                <button type="submit" className="popup__button">Сохранить</button>
             </PopupWithForm>
 
             <PopupWithForm
@@ -65,6 +65,7 @@ function App() {
                 title="Редактировать профиль"
                 name="user"
                 onClose={closeAllPopups}
+                buttonText="Сохранить"
             >
                 <label className="popup__field">
                     <input name="name" placeholder="Имя" type="text" className="popup__input" id="name" required minLength="2" maxLength="40" />
@@ -74,7 +75,6 @@ function App() {
                     <input name="description" placeholder="О себе" type="text" className="popup__input" id="description" required minLength="2" maxLength="200"/>
                     <span className="popup__error description-error"></span>
                 </label>
-                <button type="submit" className="popup__button">Сохранить</button>
             </PopupWithForm>
             
             <PopupWithForm
@@ -82,6 +82,7 @@ function App() {
                 title="Новое место"
                 name="place"
                 onClose={closeAllPopups}
+                buttonText="Создать"
             >
                 <label className="popup__field">
                     <input name="title" placeholder="Название" type="text" className="popup__input" id="title" required minLength="2" maxLength="30" />
@@ -91,16 +92,14 @@ function App() {
                     <input name="image" placeholder="Ссылка на картинку" type="url" className="popup__input" id="image" required />
                     <span className="popup__error image-error"></span>
                 </label>
-                <button type="submit" className="popup__button">Создать</button>
             </PopupWithForm>
             
             <PopupWithForm
                 title="Вы уверены?"
                 name="confirmation"
                 onClose={closeAllPopups}
-            >
-                <button type="submit" className="popup__button popup__button_margin-top_small">Да</button>
-            </PopupWithForm>
+                buttonText="Да"
+            />
             
             <ImagePopup
                 card={selectedCard}
