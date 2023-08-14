@@ -13,25 +13,23 @@ import AddPlacePopup from "./AddPlacePopup.js";
 import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 
 function App() {
-  const [currentUser, setUser] = React.useState({ avatar: avatarTemplate });
+  const [currentUser, setCurrentUser] = React.useState({ avatar: avatarTemplate });
   const [cards, setCards] = React.useState([]);
-  const [isEditAvatarPopupOpen, openEditAvatarPopup] = React.useState(false);
-  const [isEditProfilePopupOpen, openEditProfilePopup] = React.useState(false);
-  const [isAddPlacePopupOpen, openAddPlacePopup] = React.useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(null);
 
   React.useEffect(() => {
     api
       .getUserInfo()
       .then((data) => {
-        setUser(data);
+        setCurrentUser(data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
 
-  React.useEffect(() => {
     api
       .getInitialCards()
       .then((data) => {
@@ -43,15 +41,15 @@ function App() {
   }, []);
 
   function handleEditAvatarClick() {
-    openEditAvatarPopup(true);
+    setIsEditAvatarPopupOpen(true);
   }
 
   function handleEditProfileClick() {
-    openEditProfilePopup(true);
+    setIsEditProfilePopupOpen(true);
   }
 
   function handleAddPlaceClick() {
-    openAddPlacePopup(true);
+    setIsAddPlacePopupOpen(true);
   }
 
   function handleDeleteClick(card) {
@@ -98,9 +96,9 @@ function App() {
   }
 
   function closeAllPopups() {
-    openEditAvatarPopup(false);
-    openEditProfilePopup(false);
-    openAddPlacePopup(false);
+    setIsEditAvatarPopupOpen(false);
+    setIsEditProfilePopupOpen(false);
+    setIsAddPlacePopupOpen(false);
     setSelectedCard(null);
   }
 
@@ -108,26 +106,24 @@ function App() {
     api
       .setAvatar(input.avatar)
       .then((data) => {
-        setUser(data);
+        setCurrentUser(data);
+        closeAllPopups();
       })
       .catch((error) => {
         console.log(error);
       });
-
-    closeAllPopups();
   }
 
   function handleUpdateUser(input) {
     api
       .setUserInfo(input.name, input.about)
       .then((data) => {
-        setUser(data);
+        setCurrentUser(data);
+        closeAllPopups();
       })
       .catch((error) => {
         console.log(error);
       });
-
-    closeAllPopups();
   }
 
   function handleAddPlaceSubmit(input) {
@@ -135,12 +131,11 @@ function App() {
       .postCard(input.name, input.link)
       .then((newCard) => {
         setCards([newCard, ...cards]);
+        closeAllPopups();
       })
       .catch((error) => {
         console.log(error);
       });
-
-    closeAllPopups();
   }
 
   return (
