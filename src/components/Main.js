@@ -2,11 +2,9 @@ import React from 'react';
 import Card from "./Card.js";
 
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
-import { CardsContext } from '../contexts/CardsContext.js';
 
 function Main(props) {
     const currentUser = React.useContext(CurrentUserContext);
-    const cards = React.useContext(CardsContext);
 
     return (
         <main className="content">
@@ -22,7 +20,7 @@ function Main(props) {
             </section>
 
             <section className="cards">
-                {cards.map((card, i) => (
+                {props.cards.map((card, i) => (
                     <Card key={card._id} card={card} onDeleteClick={props.onDeleteClick} onLikeClick={props.onLikeClick} onCardClick={props.onCardClick} />
                 ))}
             </section>
