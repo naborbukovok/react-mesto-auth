@@ -1,24 +1,39 @@
 import React from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+
 import Header from "./Header.js";
 import Main from "./Main.js";
 import Footer from "./Footer.js";
 import PopupWithForm from "./PopupWithForm.js";
 import ImagePopup from "./ImagePopup.js";
 import api from "../utils/api.js";
+import { register, checkToken } from "../utils/auth.js";
 import avatarTemplate from "../images/avatar-template.png";
 import EditAvatarPopup from "./EditAvatarPopup.js";
 import EditProfilePopup from "./EditProfilePopup.js";
 import AddPlacePopup from "./AddPlacePopup.js";
+import ProtectedRoute from "./ProtectedRoute.js";
+import Register from "./Register.js";
+import Login from "./Login.js";
+import InfoTooltip from "./InfoTooltip.js";
 
 import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 
 function App() {
-  const [currentUser, setCurrentUser] = React.useState({ avatar: avatarTemplate });
+  const [currentUser, setCurrentUser] = React.useState({
+    avatar: avatarTemplate,
+  });
+  const [email, setEmail] = React.useState("");
   const [cards, setCards] = React.useState([]);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
+  const [isInfoTooltipOk, setIsInfoTooltipOk] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(null);
+  const [loggedIn, setLoggedIn] = React.useState(false);
+
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     api
@@ -39,6 +54,23 @@ function App() {
         console.log(error);
       });
   }, []);
+
+  React.useEffect(() => {
+    if (localStorage.getItem('token')){
+      const token = localStorage.getItem('token');
+  
+      if (token) {
+        checkToken(token)
+        .then((res) => {
+          if (res) {
+            setEmail(res.data.email);
+            setLoggedIn(true);
+            navigate("/", {replace: true});
+            }
+        });
+      }
+    }
+  }, [navigate])
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -99,6 +131,7 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setIsInfoTooltipOpen(false);
     setSelectedCard(null);
   }
 
@@ -138,50 +171,115 @@ function App() {
       });
   }
 
+  function handleRegister(email, password) {
+    register(email, password)
+    .then((data) => {
+      if (data) {
+        setIsInfoTooltipOk(true);
+        navigate("/signin", {replace: true});
+      }
+    })
+    .catch((error) => {
+      setIsInfoTooltipOk(false);
+      console.log(error);
+    })
+    .finally(() => {
+      setIsInfoTooltipOpen(true);
+    });
+  }
+
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem("token");
+    navigate("/signin");
+    setLoggedIn(false);
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <div className="page">
-        <Header />
+        <div className="page">
+          <Header
+            email={email}
+            onSignOut={handleSignOut}
+          />
 
-        <Main
-          onEditAvatar={handleEditAvatarClick}
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onDeleteClick={handleDeleteClick}
-          onLikeClick={handleLikeClick}
-          onCardClick={handleCardClick}
-          cards={cards}
-        />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  component={Main}
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onDeleteClick={handleDeleteClick}
+                  onLikeClick={handleLikeClick}
+                  onCardClick={handleCardClick}
+                  cards={cards}
+                />
+              }
+            />
+            <Route 
+              path="/signup"
+              element={
+                <Register
+                  onRegister={handleRegister}
+                />
+              }
+            />
+            <Route 
+              path="/signin"
+              element={
+                <Login
+                  onLogin={handleLogin}
+                />
+              }
+            />
+            <Route
+              path="*"
+              element={ loggedIn ? <Navigate to="/" replace /> : <Navigate to="/signin" replace /> }
+            />
+          </Routes>
 
-        <Footer />
+          <Footer />
 
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}
-        />
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+          />
 
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser}
-        />
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+          />
 
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlaceSubmit}
-        />
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit}
+          />
 
-        <PopupWithForm
-          title="Вы уверены?"
-          name="confirmation"
-          onClose={closeAllPopups}
-          buttonText="Да"
-        />
+          <PopupWithForm
+            title="Вы уверены?"
+            name="confirmation"
+            onClose={closeAllPopups}
+            buttonText="Да"
+          />
 
-        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-      </div>
+          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+
+          <InfoTooltip 
+            isOpen={isInfoTooltipOpen}
+            isOk={isInfoTooltipOk}
+            onClose={closeAllPopups}
+          />
+        </div>
     </CurrentUserContext.Provider>
   );
 }
