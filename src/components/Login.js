@@ -1,12 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { login } from "../utils/auth.js";
 
 function Login(props) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-
-  const navigate = useNavigate();
 
   const handleEmailChange = (evt) => {
     setEmail(evt.target.value);
@@ -18,21 +14,9 @@ function Login(props) {
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    if (!email || !password) {
-      return;
-    }
-    login(email, password)
-      .then((data) => {
-        if (data.token) {
-          setEmail("");
-          setPassword("");
-          props.onLogin();
-          navigate('/', {replace: true});
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+    props.onLogin(email, password);
+    setEmail("");
+    setPassword("");
   }
 
   return (

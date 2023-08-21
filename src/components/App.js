@@ -7,7 +7,7 @@ import Footer from "./Footer.js";
 import PopupWithForm from "./PopupWithForm.js";
 import ImagePopup from "./ImagePopup.js";
 import api from "../utils/api.js";
-import { register, checkToken } from "../utils/auth.js";
+import { register, login, checkToken } from "../utils/auth.js";
 import avatarTemplate from "../images/avatar-template.png";
 import EditAvatarPopup from "./EditAvatarPopup.js";
 import EditProfilePopup from "./EditProfilePopup.js";
@@ -36,24 +36,26 @@ function App() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((data) => {
-        setCurrentUser(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if (loggedIn) {
+      api
+        .getUserInfo()
+        .then((data) => {
+          setCurrentUser(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    api
-      .getInitialCards()
-      .then((data) => {
-        setCards(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+      api
+        .getInitialCards()
+        .then((data) => {
+          setCards(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [loggedIn]);
 
   React.useEffect(() => {
     if (localStorage.getItem('token')){
@@ -67,10 +69,13 @@ function App() {
             setLoggedIn(true);
             navigate("/", {replace: true});
             }
+        })
+        .catch((error) => {
+          console.log(error);
         });
       }
     }
-  }, [navigate])
+  }, [])
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -188,8 +193,21 @@ function App() {
     });
   }
 
-  function handleLogin() {
-    setLoggedIn(true);
+  function handleLogin(email, password) {
+    if (!email || !password) {
+      return;
+    }
+    login(email, password)
+      .then((data) => {
+        if (data.token) {
+          setEmail(email);
+          setLoggedIn(true);
+          navigate('/', {replace: true});
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
   function handleSignOut() {

@@ -15,7 +15,6 @@ export const register = (email, password) => {
       }
       return res.json();
     })
-    .catch((error) => console.log(error));
 };
 
 export const login = (email, password) => {
@@ -27,14 +26,18 @@ export const login = (email, password) => {
     },
     body: JSON.stringify({ email, password }),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) {
+        return Promise.reject(res.status);
+      }
+      return res.json();
+    })
     .then((data) => {
       if (data.token) {
         localStorage.setItem("token", data.token);
         return data;
       }
     })
-    .catch((error) => console.log(error));
 };
 
 export const checkToken = (token) => {
@@ -46,7 +49,10 @@ export const checkToken = (token) => {
         "Authorization" : `Bearer ${token}`
       }
     })
-    .then(res => res.json())
-    .then(data => data)
-    .catch((error) => console.log(error));
+    .then(res => {
+      if (!res.ok) {
+        return Promise.reject(res.status);
+      }
+      return res.json();
+    })
   } 
